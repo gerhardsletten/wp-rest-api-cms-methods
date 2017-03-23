@@ -11,7 +11,7 @@ It also has a customizer panel where you can set the url to your frontend applic
 
 ### Page
 
-```php
+```rest
 GET /wp-json/rest-cms-plugin/v1/page/
 {
   path: '/parent-page/sub-page'
@@ -20,7 +20,7 @@ GET /wp-json/rest-cms-plugin/v1/page/
 
 Returns an object with these properties:
 
-```json
+```js
 {
   "id":       1,
   "title":    "..",
@@ -29,9 +29,9 @@ Returns an object with these properties:
   "image":    "..", // Pages feature image
   "type":     "..", // page-frontpage.php ==> "frontpage", or "default" if no custom page-template is used
   "url":      "..", // Path for page
-  "path":     [..], // List with ancestor pages including this page
-  "fields":   {..}, // Optional, if acf is installed, an object of the pages custom fields
-  "children"  [..], // Optional, with a filter you can conditionally choose to list the pages child-pages
+  "path":     [], // List with ancestor pages including this page
+  "fields":   {}, // Optional, if acf is installed, an object of the pages custom fields
+  "children"  [], // Optional, with a filter you can conditionally choose to list the pages child-pages
 }
 ```
 
@@ -90,13 +90,13 @@ add_filter('rest_cms_page_json', function ($json, $request) {
 
 ### Menu
 
-```php
+```rest
 GET /wp-json/rest-cms-plugin/v1/menu/primary
 ```
 
 Returns an object with these properties:
 
-```json
+```js
 {
   "name":    "..",  // The name you have given the menu
   "items":   [..]   // Its menu-items
