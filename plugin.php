@@ -36,7 +36,7 @@ if (!class_exists("CMSMethodPlugin")) {
       $url = parse_url($link);
       $domain = get_theme_mod($this->prefix . 'app_url');
       if ($domain) {
-        return sprintf("%s%s", $domain, $url['path'] );
+        // return sprintf("%s%s", $domain, $url['path'] );
       }
       return $link;
     }
@@ -80,12 +80,39 @@ if (!class_exists("CMSMethodPlugin")) {
           )
         )
       ));
+      register_rest_route( $namespace, '/options', array(
+        'methods' => WP_REST_Server::READABLE,
+        'callback' => array( $this, 'fetch_options' ),
+        'args' => array(
+          'options' => array(
+            'type' => 'array',
+            'required' => true,
+            'items' => array(
+              'type' => 'string',
+              'required' => true
+            )
+          )
+        )
+      ));
+    }
+
+    function fetch_options ( $request ) {
+      $params = $request->get_params();
+      if ( ! isset( $params['options'] ) ) {
+        return null;
+      }
+      $options = $params['options'];
+      $return = array();
+      foreach($options as $key) {
+        $return[$key] = get_theme_mod($key, null );
+      }
+      return $return;
     }
 
     function fetch_menu( $request ) {
-      $params     = $request->get_params();
-      $location   = $params['location'];
-      $locations  = get_nav_menu_locations();
+      $params = $request->get_params();
+      $location = $params['location'];
+      $locations = get_nav_menu_locations();
 
       if ( ! isset( $locations[ $location ] ) ) {
         return null;
@@ -106,10 +133,17 @@ if (!class_exists("CMSMethodPlugin")) {
 
     function util_format_menu_items ($item) {
       $link = array(
-        'title' => $item->post_title,
+        'title' => $item->title,
         'url' => ($item->type === 'custom') ? $item->url : $this->util_fix_url(get_page_uri( $item->object_id )),
       );
-      return apply_filters('rest_cms_menu_item', $link, $item);
+      $extra = array();
+      if ( function_exists('get_fields') ) {
+        $fields = get_fields($item);
+        if (is_array($fields)) {
+          $extra = get_fields($item);
+        }
+      }
+      return apply_filters('rest_cms_menu_item', array_merge($link, $extra), $item);
     }
 
     function fetch_page ( $request ) {
@@ -183,7 +217,7 @@ if (!class_exists("CMSMethodPlugin")) {
     }
 
     function util_fix_url ($str = '') {
-      return sprintf('/%s', $str);
+      return sprintf('/%s/', $str);
     }
 
     function util_path_trail ( $post_id ) {
