@@ -217,7 +217,7 @@ if (!class_exists("CMSMethodPlugin")) {
     }
 
     function util_fix_url ($str = '') {
-      return sprintf('/%s/', $str);
+      return sprintf('/%s', $str);
     }
 
     function util_path_trail ( $post_id ) {
