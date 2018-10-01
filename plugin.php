@@ -159,6 +159,10 @@ if (!class_exists("CMSMethodPlugin")) {
         $json = array(
           'id' => $page->ID,
           'title' => get_the_title( $page->ID ),
+          'meta' => array(
+            'title' => get_post_meta($page->ID, '_yoast_wpseo_title', true),
+            'description' => get_post_meta($page->ID, '_yoast_wpseo_metadesc', true)
+          ),
           'excerpt' => $page->post_excerpt,
           'content' => apply_filters( 'the_content', $page->post_content ),
           'image' => $this->util_post_feature_image( $page->ID, apply_filters('rest_cms_image_size', 'full', $page->ID) ),
