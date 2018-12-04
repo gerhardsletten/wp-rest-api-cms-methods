@@ -151,11 +151,14 @@ if (!class_exists("CMSMethodPlugin")) {
       $path = $params['path'];
       if ($path) {
         $isHome = $path == '/';
-        $page = $isHome ? get_page( get_option( 'page_on_front' ) ) : get_page_by_path( $path );
+        $pageFrontId = get_option( 'page_on_front' );
+        $page = $isHome ? get_page( $pageFrontId ) : get_page_by_path( $path );
         if ( empty( $page ) ) {
           return null;
         }
-
+        if ( ($path != '/' && $page->ID == $pageFrontId) || $page->post_type != 'page') {
+          return null;
+        }
         $json = array(
           'id' => $page->ID,
           'title' => get_the_title( $page->ID ),
