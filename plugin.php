@@ -153,18 +153,20 @@ if (!class_exists("CMSMethodPlugin")) {
         $isHome = $path == '/';
         $pageFrontId = get_option( 'page_on_front' );
         $page = $isHome ? get_page( $pageFrontId ) : get_page_by_path( $path );
-        if ( empty( $page ) ) {
+        if ( empty( $page ) || $page->post_status != 'publish' ) {
           return null;
         }
         if ( ($path != '/' && $page->ID == $pageFrontId) || $page->post_type != 'page') {
           return null;
         }
+        $noIndex = get_post_meta($page->ID, '_yoast_wpseo_meta-robots-noindex', true);
         $json = array(
           'id' => $page->ID,
           'title' => get_the_title( $page->ID ),
           'meta' => array(
             'title' => get_post_meta($page->ID, '_yoast_wpseo_title', true),
-            'description' => get_post_meta($page->ID, '_yoast_wpseo_metadesc', true)
+            'description' => get_post_meta($page->ID, '_yoast_wpseo_metadesc', true),
+            'noIndex' => $noIndex == '1' ? true : false
           ),
           'excerpt' => $page->post_excerpt,
           'content' => apply_filters( 'the_content', $page->post_content ),
